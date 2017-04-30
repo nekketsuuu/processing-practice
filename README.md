@@ -1,3 +1,3 @@
 # processing-practice
 
-A backup files of my training
+Processing のスクリプトを適当に保管しておくためのレポジトリです。
