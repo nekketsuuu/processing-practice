@@ -130,7 +130,7 @@ void collisionRect(Ball ball, Rect rect) {
 
     // その点からの距離を調べ、円の半径より小さければ衝突している
     // ただし、もし既に長方形から出て行こうとしているなら無視する
-    if (nearest.sub(ball.pos).magSq() <= ball.radius * ball.radius) {
+    if (PVector.sub(nearest, ball.pos).magSq() <= ball.radius * ball.radius) {
       if ((horizontal == 1 && ball.dir.y > 0.0) || (horizontal == 2 && ball.dir.y < 0.0)) {
         ball.dir.y *= -1.0;
         if (rect.isBlock) {
