@@ -95,7 +95,8 @@ class Ball {
     ellipse(pos.x, pos.y, radius, radius);
   }
   void setDir(float x, float y) {
-    dir.set(x, y).normalize();
+    dir.set(x, y);
+    dir.normalize();
   }
 }
 
