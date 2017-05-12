@@ -9,39 +9,58 @@ int state;
 final int WAITING = 0;
 final int SWAPPING = 1;
 final int COMPLETED = 2;
+int step;
 float time; // 0から1
+float xSrc;
+float xDst;
 
 // オブジェクト
 Bar[] bars = new Bar[N];
-BubbleSort bubbleVars = new BubbleSort();
+Swaps bubbleSwaps = new Swaps();
 
 // 初期化
 void setup() {
   size(600, 400);
   initShuffle(bars);
   state = WAITING;
+  step = 0;
   time = 0.0;
+  bubbleSort(bars, bubbleSwaps);
   background(0);
 }
 
 void draw() {
+  int src = bubbleSwaps.getSrc(step);
+  int dst = bubbleSwaps.getDst(step);
   switch (state) {
   case WAITING:
-    bubbleSort(bars, bubbleVars);
+    xSrc = bars[src].pos.x;
+    xDst = bars[dst].pos.x;
+    bars[src].c = SWAPPING_COLOR;
+    bars[dst].c = SWAPPING_COLOR;
+    state = SWAPPING;
     break;
   case SWAPPING:
-    bars[bubbleVars.swapFrom].pos.x = bubbleVars.xFrom + (bubbleVars.xTo - bubbleVars.xFrom) * time;
-    bars[bubbleVars.swapTo].pos.x   = bubbleVars.xTo   - (bubbleVars.xTo - bubbleVars.xFrom) * time;
+    bars[src].pos.x = xSrc + (xDst - xSrc) * time;
+    bars[dst].pos.x = xDst - (xDst - xSrc) * time;
     time += SWAP_DELTA;
     if (time >= 1.0) {
-      time = 0.0;
-      // 数値誤差を消す
-      bars[bubbleVars.swapFrom].pos.x = bubbleVars.xTo;
-      bars[bubbleVars.swapTo].pos.x   = bubbleVars.xFrom;
-      // 交換完了
-      swapEnd(bars, bubbleVars.swapFrom, bubbleVars.swapTo);
-      // チラつき防止
-      return;
+      int temp = bars[src].value;
+      bars[src].value = bars[dst].value;
+      bars[dst].value = temp;
+      bars[src].pos.x = xSrc;
+      bars[dst].pos.x = xDst;
+      bars[src].c = DEFAULT_COLOR;
+      bars[dst].c = DEFAULT_COLOR;
+      if (step < bubbleSwaps.size() - 1) {
+        step++;
+        time = 0.0;
+        state = WAITING;
+        // チラつき防止
+        return;
+      } else {
+        state = COMPLETED;
+      }
     }
     break;
   case COMPLETED:

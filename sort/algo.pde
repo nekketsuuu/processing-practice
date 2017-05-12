@@ -1,65 +1,43 @@
-void swapStart(Bar[] bars, int i, int j) {
-  bars[i].isSwapping = true;
-  bars[i].c = SWAPPING_COLOR;
-  bars[j].isSwapping = true;
-  bars[j].c = SWAPPING_COLOR;
-  state = SWAPPING;
-}
-void swapEnd(Bar[] bars, int i, int j) {
-  bars[i].isSwapping = false;
-  bars[i].c = DEFAULT_COLOR;
-  bars[j].isSwapping = false;
-  bars[j].c = DEFAULT_COLOR;
-  int tmpValue = bars[i].value;
-  bars[i].value = bars[j].value;
-  bars[j].value = tmpValue;
-  float tmpPosX = bars[i].pos.x;
-  bars[i].pos.x = bars[j].pos.x;
-  bars[j].pos.x = tmpPosX;
-  state = WAITING;
-}
-
-/*
- * バブルソート
- */
-class BubbleSort {
-  // バブルソートで使うインデックス
-  int i;
-  int j;
-  // 要素を交換するとき、データを覚えておく
-  int swapFrom;
-  int swapTo;
-  float xFrom;
-  float xTo;
-
-  BubbleSort() {
-    i = 0;
-    j = 0;
-    swapFrom = 0;
-    swapTo = 0;
-    xFrom = 0.0;
-    xTo = 0.0;
+class Swaps {
+  ArrayList<int[]> mem;
+  
+  Swaps() {
+    mem = new ArrayList<int[]>();
+  }
+  
+  int size() {
+    return mem.size();
+  }
+  void add(int i, int j) {
+    int[] swap = {i, j};
+    mem.add(swap);
+  }
+  int getSrc(int step) {
+    return mem.get(step)[0];
+  }
+  int getDst(int step) {
+    return mem.get(step)[1];
   }
 }
 
-void bubbleSort(Bar[] bars, BubbleSort vars) {
-  if (vars.i >= bars.length - 1) {
-    state = COMPLETED;
-    return;
-  }
+void swap(int[] values, Swaps swaps, int i, int j) {
+  swaps.add(i, j);
+  int temp = values[i];
+  values[i] = values[j];
+  values[j] = temp;
+}
 
-  if (bars[vars.j].value > bars[vars.j + 1].value) {
-    swapStart(bars, vars.j, vars.j + 1);
-    vars.swapFrom = vars.j;
-    vars.swapTo   = vars.j + 1;
-    vars.xFrom = bars[vars.j].pos.x;
-    vars.xTo   = bars[vars.j + 1].pos.x;
+void bubbleSort(Bar[] bars, Swaps swaps) {
+  int[] values = new int[N];
+  for (int i = 0; i < N; i++) {
+    values[i] = bars[i].value;
   }
-
-  if (vars.j >= bars.length - vars.i - 2) {
-    vars.i++;
-    vars.j = 0;
-  } else {
-    vars.j++;
+  
+  for (int i = 0; i < N; i++) {
+    for (int j = 0; j < N - i - 1; j++) {
+      if (values[j] > values[j+1]) {
+        swap(values, swaps, j, j+1);
+      }
+    }
   }
 }
